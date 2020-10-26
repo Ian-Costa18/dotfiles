@@ -65,8 +65,8 @@ groups = [
 ##### LAYOUTS #####
 layout_config = dict(
     margin = 6, # Gap between windows
-    border_focus = "#44bcd8", # Focused window border color
-    border_normal = "#b48ead", # Inactive window border color
+    border_focus = "#88c0d0", # Focused window border color
+    border_normal = "#5e81ac", # Inactive window border color
     border_width = 3, # Width of focused and inactive borders
 )
 

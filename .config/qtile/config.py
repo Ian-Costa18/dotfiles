@@ -63,25 +63,28 @@ groups = [
 ]
 
 ##### LAYOUTS #####
-MARGIN = 6 # Gap between windows
-BORDER_NORMAL = "#520500" # Inactive window border color
+layout_config = dict(
+    margin = 6, # Gap between windows
+    border_focus = "#44bcd8", # Focused window border color
+    border_normal = "#b48ead", # Inactive window border color
+    border_width = 3, # Width of focused and inactive borders
+)
+
 
 layouts = [
     layout.Max(
-        margin=MARGIN),
+        margin=layout_config["margin"]),
 
     layout.MonadTall(
-        margin=MARGIN, 
-        border_normal=BORDER_NORMAL
+        **layout_config,
         ),
 
     layout.MonadWide(
-        margin=MARGIN,
-        border_normal=BORDER_NORMAL
+        **layout_config,
         ),
 
     layout.floating.Floating(
-        margin=MARGIN,
+        **layout_config,
         auto_float_types="toolbar",
         ),
 ]
@@ -159,11 +162,12 @@ widget_defaults = dict(
     font='sans',
     fontsize=12,
     padding=3,
+    background="2e3440"
 )
 extension_defaults = widget_defaults.copy()
 
 #sep_defaults = [linewidth: 2]
-separator = widget.Sep(linewidth=2)
+separator = copy(widget.Sep(linewidth=2))
 
 screens = [
     Screen(
@@ -173,25 +177,26 @@ screens = [
                 widget.GroupBox(invert_mouse_wheel=True),
                 #widget.Prompt(), # Change to Rofi
                 widget.WindowName(),
-                #copy(separator),
+                #separator,
                 #widget.TaskList(),
-                #copy(separator),
+                #separator,
                 #widget.Net(fmt="↓{down}↑{up}", interface="wlp2s0"),
-                #copy(separator),
+                #separator,
                 #widget.Battery(charge_char='+', discharge_char='-', format='{char}{percent:2.0%} {hour:d}:{min:02d}'),
-                #copy(separator),
+                #separator,
                 #widget.BatteryIcon(),
                 #widget.Pacman(fmt="PM:{}", execute="pamac-manager"),
-                #copy(separator),
+                #separator,
                 widget.Systray(),
-                copy(separator),
+                separator,
                 widget.Volume(volume_down_command = "amixer -D pulse sset Master 5%-", volume_up_command = "amixer -D pulse sset Master 1%+", volume_app = "pavucontrol",),
-                copy(separator),
+                separator,
                 widget.Clock(format='%I:%M %p %m/%d', timezone=None),
                 #widget.QuickExit(default_text='[exit]', countdown_format="[{}]"),
             ],
             24,
-            opacity=0.75,
+            opacity=0.9,
+            background="2e3440"
         ),
         #bottom=bar.Gap(size=MARGIN),
         #left=bar.Gap(size=MARGIN),
@@ -221,7 +226,8 @@ screens = [
                 widget.QuickExit(default_text='[exit]', countdown_format="[{}]"),
             ],
             24,
-            opacity=0.75,
+            opacity=0.9,
+            background="2e3440"
         ),
         #bottom=bar.Gap(size=MARGIN),
         #left=bar.Gap(size=MARGIN),
@@ -248,7 +254,7 @@ def autostart():
             ['nitrogen', '--restore'],
             ['picom', '--e'],
             ['flameshot'],
-            ['nordvpn-system-tray'],
+            #['nordvpn-system-tray'],
             ['pamac-tray'],
             ['/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1'],
             ['insync', 'start'],

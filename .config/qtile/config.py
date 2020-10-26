@@ -118,7 +118,7 @@ keys = [
 
     Key([mod, "control"], "r", lazy.restart()),
     Key([mod, "control"], "q", lazy.shutdown()),
-    Key([mod], "r", lazy.spawn('rofi -show run')),
+    Key([mod], "r", lazy.spawn('rofi -show drun')),
     # Switch to last used group with Alt+Tab
     #Key([ALT], "Tab", lazy.screen.toggle_group()),
     Key([ALT], "Tab", lazy.spawn('rofi -show window')),

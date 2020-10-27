@@ -122,6 +122,7 @@ keys = [
     Key([mod, "control"], "r", lazy.restart()),
     Key([mod, "control"], "q", lazy.shutdown()),
     Key([mod], "r", lazy.spawn('rofi -show drun')),
+    Key([mod, "shift"], "r", lazy.spawn('rofi -show run')),
     # Switch to last used group with Alt+Tab
     #Key([ALT], "Tab", lazy.screen.toggle_group()),
     Key([ALT], "Tab", lazy.spawn('rofi -show window')),
@@ -289,7 +290,7 @@ dgroups_key_binder = None
 dgroups_app_rules = []  # type: List
 main = None
 follow_mouse_focus = True
-bring_front_click = True
+bring_front_click = False
 cursor_warp = False
 floating_layout = layout.Floating(float_rules=[
     {'wmclass': 'confirm'},
@@ -306,6 +307,8 @@ floating_layout = layout.Floating(float_rules=[
     {'wname': 'branchdialog'},  # gitk
     {'wname': 'pinentry'},  # GPG key password entry
     {'wmclass': 'ssh-askpass'},  # ssh-askpass
+    {'wname': 'Library'} # Firefox history
+
 ])
 auto_fullscreen = True
 focus_on_window_activation = "smart"

@@ -9,6 +9,7 @@ set autoindent
 set mouse=a
 filetype indent on
 set tabstop=4
+set shiftwidth=4
 set expandtab
 set linebreak
 set showmatch
@@ -23,4 +24,6 @@ set history=1000
 set undolevels=1000
 set backspace=indent,eol,start
 set termguicolors
+set noshowmode
+set cursorline
 

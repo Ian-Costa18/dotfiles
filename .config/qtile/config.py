@@ -259,7 +259,8 @@ def autostart():
             ['/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1'],
             ['insync', 'start'],
             ['ffmpeg', '-i', '/dev/video0', '-vcodec', 'rawvideo', '-threads', '0', '-f', 'v4l2', '/dev/video2'],
-            ['~/.config/qtile/scripts/astro.py']
+            ['~/.config/qtile/scripts/astro.py'],
+            ['signal-desktop-beta', '--start-in-tray']
             ]
     for p in processes:
         subprocess.Popen(p)

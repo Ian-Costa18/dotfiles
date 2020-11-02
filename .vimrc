@@ -26,4 +26,5 @@ set backspace=indent,eol,start
 set termguicolors
 set noshowmode
 set cursorline
+set clipboard=unnamedplus
 

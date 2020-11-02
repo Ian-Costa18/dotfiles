@@ -251,34 +251,22 @@ mouse = [
 # Startup programs
 @hook.subscribe.startup_once
 def autostart():
-    processes = [
-            ['nitrogen', '--restore'],
-            ['picom', '--e'],
-            ['flameshot'],
-            #['nordvpn-system-tray'],
-            ['pamac-tray'],
-            ['/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1'],
-            ['insync', 'start'],
-            ['ffmpeg', '-i', '/dev/video0', '-vcodec', 'rawvideo', '-threads', '0', '-f', 'v4l2', '/dev/video2'],
-            ['~/.config/qtile/scripts/astro.py'],
-            ['signal-desktop-beta', '--start-in-tray']
-            ]
-    for p in processes:
-        subprocess.Popen(p)
+    start = os.path.expanduser('~/.config/qtile/scripts/autostart.sh')
+    subprocess.call([start])
 
 
-@hook.subscribe.startup
-def autostart():
-	# From: https://gitlab.com/PaulBrownMagic/dotfiles/-/blob/master/qtile/config.py
-	subprocess.call(['killall', 'nm-applet'])
-	subprocess.call(['killall', 'pa-applet'])
-	processes = [
-	        ['pa-applet'],
-	        ['nm-applet'],
-	      	['xfce4-power-manager', '--restart'],
-			]
-	for p in processes:
-	    subprocess.Popen(p)
+#@hook.subscribe.startup
+#def autostart():
+#	# From: https://gitlab.com/PaulBrownMagic/dotfiles/-/blob/master/qtile/config.py
+#	subprocess.call(['killall', 'nm-applet'])
+#	subprocess.call(['killall', 'pa-applet'])
+#	processes = [
+#	        ['pa-applet'],
+#	        ['nm-applet'],
+#	      	#['xfce4-power-manager', '--restart'], # For laptop power management
+#			]
+#	for p in processes:
+#	    subprocess.call(p)
 
 
 astro = Thread(target=start_astro_scanner)
@@ -307,7 +295,8 @@ floating_layout = layout.Floating(float_rules=[
     {'wname': 'branchdialog'},  # gitk
     {'wname': 'pinentry'},  # GPG key password entry
     {'wmclass': 'ssh-askpass'},  # ssh-askpass
-    {'wname': 'Library'} # Firefox history
+    {'wname': 'Library'}, # Firefox history
+    #{'wname': 'Chat'}, # Zoom chat window
 
 ])
 auto_fullscreen = True

@@ -35,6 +35,19 @@ from threading import Thread
 
 from typing import List  # noqa: F401
 
+COLORS = {
+    "Polar Night": ["#2e3440", "#3b4252", "#434c5e", "#4c566a"],
+    "Snow Storm": ["#d8dee9", "#e5e9f0", "#eceff4"],
+    "Frost": ["#8fbcbb", "#88c0d0", "#81a1c1", "#5e81ac"],
+    "Aurora": ["bf616a", "d08770", "ebcb8b", "a3be8c", "b48ead"],
+}
+
+def_colors = {
+    "background": COLORS["Polar Night"][0],
+    "window active": COLORS["Frost"][1],
+    "window inactive": COLORS["Frost"][3],
+}
+
 ##### KEYBINDINGS ######
 SUPER = "mod4"
 ALT = "mod1"
@@ -52,21 +65,21 @@ groups = [
         # Dropdown spotify using spotify-tui
         DropDown("music", "alacritty -e spt --tick-rate=17", opacity=0.99, x=0.05, width=0.9, height=0.6),
     ]),
-    Group("a", layout="floating"),
+    Group("a", layout="monadtall"),
     Group("s", spawn="firefox", layout="max"),
     Group("d", spawn="alacritty", layout="monadtall"), #, matches=[Match(wm_class=["alacritty", "Alacritty"])],
     Group("f", layout="monadwide"),
     Group("u"),
-    Group("i"),
-    Group("o", matches=[Match(wm_class=["sublime text", "Sublime Text", "subl"])], spawn="subl", layout="max"),
+    Group("i", matches=[Match(wm_class=["lutris"])], spawn="lutris"),
+    Group("o", matches=[Match(wm_class=["thunderbird", "Mozilla Thunderbird"])], spawn="thunderbird", layout="max"),
     Group("p", matches=[Match(wm_class=["discord"])], spawn="discord", layout="max"),
 ]
 
 ##### LAYOUTS #####
 layout_config = dict(
     margin = 6, # Gap between windows
-    border_focus = "#88c0d0", # Focused window border color
-    border_normal = "#5e81ac", # Inactive window border color
+    border_focus = def_colors["window active"], # Focused window border color
+    border_normal = def_colors["window inactive"], # Inactive window border color
     border_width = 3, # Width of focused and inactive borders
 )
 
@@ -99,6 +112,9 @@ keys = [
     # Move windows up or down in current stack
     Key([mod], "k", lazy.layout.shuffle_down()),
     Key([mod], "j", lazy.layout.shuffle_up()),
+    Key([mod], "h", lazy.layout.grow()),
+    Key([mod], "l", lazy.layout.shrink()),
+    Key([mod], "n", lazy.layout.reset()),
 
     # Switch window focus to other pane(s) of stack
     Key([mod], "space", lazy.layout.next()),
@@ -128,7 +144,7 @@ keys = [
     Key([ALT], "Tab", lazy.spawn('rofi -show window')),
 
     # Lock screen
-    Key([mod, "shift"], "l", lazy.spawn("dm-tool lock")),
+    #Key([mod, "shift"], "l", lazy.spawn("dm-tool lock")),
     # Toggle if a window is floating
     Key([mod, "shift"], "Tab", lazy.window.toggle_floating()),
     # Spawn "explorer", file manager
@@ -163,12 +179,14 @@ widget_defaults = dict(
     font='sans',
     fontsize=12,
     padding=3,
-    background="2e3440"
+    background=def_colors["background"],
+    foreground=COLORS["Snow Storm"][2],
 )
 extension_defaults = widget_defaults.copy()
 
 #sep_defaults = [linewidth: 2]
 separator = copy(widget.Sep(linewidth=2))
+#separator = copy(widget.TextBox(text="▶", background=COLORS["Aurora"][0], foreground=COLORS["Aurora"][3])) # Seperator with arrows
 
 screens = [
     Screen(
@@ -176,16 +194,18 @@ screens = [
             [
                 widget.CurrentLayoutIcon(),
                 widget.GroupBox(invert_mouse_wheel=True),
-                #widget.Prompt(), # Change to Rofi
-                widget.WindowName(),
-                #separator,
-                #widget.TaskList(),
+                #widget.WindowName(),
+                separator,
+                widget.TaskList(
+                    markup_focused = "<b>{}</b>",
+                    txt_floating =  "🗗 ",
+                    txt_maximized = "🗖 ",
+                    txt_minimized = "🗕 ",
+                    border = COLORS["Polar Night"][3],
+                    ),
                 #separator,
                 #widget.Net(fmt="↓{down}↑{up}", interface="wlp2s0"),
                 #separator,
-                #widget.Battery(charge_char='+', discharge_char='-', format='{char}{percent:2.0%} {hour:d}:{min:02d}'),
-                #separator,
-                #widget.BatteryIcon(),
                 #widget.Pacman(fmt="PM:{}", execute="pamac-manager"),
                 #separator,
                 widget.Systray(),
@@ -209,9 +229,9 @@ screens = [
                 widget.CurrentLayoutIcon(),
                 widget.GroupBox(invert_mouse_wheel=True),
                 #widget.Prompt(), # Change to Rofi
-                widget.WindowName(),
-                #copy(separator),
-                #widget.TaskList(),
+                #widget.WindowName(),
+                separator,
+                widget.TaskList(),
                 #copy(separator),
                 #widget.Net(fmt="↓{down}↑{up}", interface="wlp2s0"),
                 #copy(separator),
@@ -222,7 +242,7 @@ screens = [
                 #copy(separator),
                 #widget.Systray(),
                 #widget.Volume(volume_down_command= "amixer -D pulse sset Master 5%-", volume_up_command  = "amixer -D pulse sset Master 1%+", volume_app         = "pavucontrol",),
-                copy(separator),
+                separator,
                 widget.Clock(format='%I:%M %p %Z', timezone=None),
                 widget.QuickExit(default_text='[exit]', countdown_format="[{}]"),
             ],
@@ -296,6 +316,8 @@ floating_layout = layout.Floating(float_rules=[
     {'wname': 'pinentry'},  # GPG key password entry
     {'wmclass': 'ssh-askpass'},  # ssh-askpass
     {'wname': 'Library'}, # Firefox history
+    {'wname': 'Kite'}, # Kite AI
+    {'wmclass': 'InputOutput'},
     #{'wname': 'Chat'}, # Zoom chat window
 
 ])

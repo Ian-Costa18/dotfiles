@@ -42,6 +42,9 @@ COLORS = {
     "Aurora": ["bf616a", "d08770", "ebcb8b", "a3be8c", "b48ead"],
 }
 
+
+HOME = os.path.expanduser('~')
+
 def_colors = {
     "background": COLORS["Polar Night"][0],
     "window active": COLORS["Frost"][1],
@@ -64,6 +67,8 @@ groups = [
         DropDown("term", "alacritty", opacity=0.8),
         # Dropdown spotify using spotify-tui
         DropDown("music", "alacritty -e spt --tick-rate=17", opacity=0.99, x=0.05, width=0.9, height=0.6),
+        # Dropdown calendar using calcurse
+        DropDown("calendar", "alacritty -e calcurse", opacity=0.99, x=0.05, width=0.9, height=0.6)
     ]),
     Group("a", layout="monadtall"),
     Group("s", spawn="firefox", layout="max"),
@@ -97,8 +102,10 @@ layouts = [
         ),
 
     layout.floating.Floating(
-        **layout_config,
         auto_float_types="toolbar",
+        border_normal = COLORS["Frost"][0],
+        border_focus = COLORS["Aurora"][3],
+        **({key:val for key, val in layout_config.items() if key != 'border_normal' and key != 'border_focus'}),
         ),
 ]
 
@@ -130,13 +137,14 @@ keys = [
     Key([mod], "Return", lazy.spawn("alacritty")),
     Key(["control", ALT], "t", lazy.group['scpd'].dropdown_toggle('term')),
     Key([mod], "period", lazy.group['scpd'].dropdown_toggle('music')),
+    Key([mod], "comma", lazy.group['scpd'].dropdown_toggle('calendar')),
 
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout()),
     Key([mod, "shift"], "c", lazy.window.kill()),
 
     Key([mod, "control"], "r", lazy.restart()),
-    Key([mod, "control"], "q", lazy.shutdown()),
+    Key([mod, "control"], "q", lazy.spawn("rofi -show power-menu -modi power-menu:rofi-power-menu --no-symbols")),
     Key([mod], "r", lazy.spawn('rofi -show drun')),
     Key([mod, "shift"], "r", lazy.spawn('rofi -show run')),
     # Switch to last used group with Alt+Tab
@@ -176,7 +184,7 @@ for i in groups:
 ##### SCREENS #####
 
 widget_defaults = dict(
-    font='sans',
+    font='FiraMono',
     fontsize=12,
     padding=3,
     background=def_colors["background"],
@@ -187,6 +195,15 @@ extension_defaults = widget_defaults.copy()
 #sep_defaults = [linewidth: 2]
 separator = copy(widget.Sep(linewidth=2))
 #separator = copy(widget.TextBox(text="▶", background=COLORS["Aurora"][0], foreground=COLORS["Aurora"][3])) # Seperator with arrows
+arrow_left = dict(
+    text='',
+    fontsize = 43,
+    padding = 0
+)
+
+# Mouse Callback for Calendar
+def show_calendar():
+    return lazy.group['scpd'].dropdown_toggle('calendar')
 
 screens = [
     Screen(
@@ -194,34 +211,48 @@ screens = [
             [
                 widget.CurrentLayoutIcon(),
                 widget.GroupBox(invert_mouse_wheel=True),
-                #widget.WindowName(),
                 separator,
                 widget.TaskList(
+                    font = "FiraMono Bold",
                     markup_focused = "<b>{}</b>",
                     txt_floating =  "🗗 ",
                     txt_maximized = "🗖 ",
                     txt_minimized = "🗕 ",
                     border = COLORS["Polar Night"][3],
                     ),
-                #separator,
-                #widget.Net(fmt="↓{down}↑{up}", interface="wlp2s0"),
-                #separator,
-                #widget.Pacman(fmt="PM:{}", execute="pamac-manager"),
-                #separator,
-                widget.Systray(),
-                separator,
-                widget.Volume(volume_down_command = "amixer -D pulse sset Master 5%-", volume_up_command = "amixer -D pulse sset Master 1%+", volume_app = "pavucontrol",),
-                separator,
-                widget.Clock(format='%I:%M %p %m/%d', timezone=None),
+                widget.TextBox(
+                       foreground = COLORS["Frost"][3],
+                       **arrow_left
+                       ),
+                widget.Systray(background = COLORS["Frost"][3]),
+                widget.TextBox(
+                       foreground = COLORS["Aurora"][1],
+                       background = COLORS["Frost"][3],
+                       **arrow_left
+                       ),
+                widget.Volume(
+                    volume_down_command = "amixer -D pulse sset Master 5%-", 
+                    volume_up_command = "amixer -D pulse sset Master 1%+", 
+                    volume_app = "pavucontrol",
+                    background = COLORS["Aurora"][1],
+                    ),
+                widget.TextBox(
+                       foreground = COLORS["Aurora"][0],
+                       background = COLORS["Aurora"][1],
+                       **arrow_left
+                       ),
+                widget.Clock(
+                    format='%I:%M %p %m/%d', 
+                    timezone=None, 
+                    background = COLORS["Aurora"][0],
+                    mouse_callbacks = {"Button1": lambda lazy: show_calendar}
+                    )
                 #widget.QuickExit(default_text='[exit]', countdown_format="[{}]"),
             ],
             24,
             opacity=0.9,
-            background="2e3440"
+            background=def_colors["background"]
         ),
-        #bottom=bar.Gap(size=MARGIN),
-        #left=bar.Gap(size=MARGIN),
-        #right=bar.Gap(size=MARGIN),
     ),
     Screen(
         top=bar.Bar(
@@ -231,7 +262,14 @@ screens = [
                 #widget.Prompt(), # Change to Rofi
                 #widget.WindowName(),
                 separator,
-                widget.TaskList(),
+                widget.TaskList(
+                    font = "FiraMono Bold",
+                    markup_focused = "<b>{}</b>",
+                    txt_floating =  "🗗 ",
+                    txt_maximized = "🗖 ",
+                    txt_minimized = "🗕 ",
+                    border = COLORS["Polar Night"][3],
+                    ),
                 #copy(separator),
                 #widget.Net(fmt="↓{down}↑{up}", interface="wlp2s0"),
                 #copy(separator),
@@ -242,17 +280,31 @@ screens = [
                 #copy(separator),
                 #widget.Systray(),
                 #widget.Volume(volume_down_command= "amixer -D pulse sset Master 5%-", volume_up_command  = "amixer -D pulse sset Master 1%+", volume_app         = "pavucontrol",),
-                separator,
-                widget.Clock(format='%I:%M %p %Z', timezone=None),
-                widget.QuickExit(default_text='[exit]', countdown_format="[{}]"),
+                widget.TextBox(
+                       foreground = COLORS["Aurora"][1],
+                       **arrow_left
+                       ),
+                widget.Clock(
+                    format='%I:%M %p %m/%d', 
+                    timezone=None, 
+                    background = COLORS["Aurora"][1]),
+                widget.TextBox(
+                       foreground = COLORS["Aurora"][0],
+                       background = COLORS["Aurora"][1],
+                       **arrow_left
+                       ),
+                widget.LaunchBar(
+                    progs=[('Exit', "rofi -show power-menu -modi power-menu:rofi-power-menu --no-symbols", 'Exit menu')], 
+                    default_icon=HOME+"/.local/share/icons/logout.png",
+                    background = COLORS["Aurora"][0],
+                    padding = 0
+                    ),
+                #widget.QuickExit(default_text='[exit]', countdown_format="[{}]", background = COLORS["Aurora"][0]),
             ],
             24,
             opacity=0.9,
-            background="2e3440"
+            background=def_colors["background"]
         ),
-        #bottom=bar.Gap(size=MARGIN),
-        #left=bar.Gap(size=MARGIN),
-        #right=bar.Gap(size=MARGIN),
     ),
 ]
 
@@ -300,27 +352,31 @@ main = None
 follow_mouse_focus = True
 bring_front_click = False
 cursor_warp = False
-floating_layout = layout.Floating(float_rules=[
-    {'wmclass': 'confirm'},
-    {'wmclass': 'dialog'},
-    {'wmclass': 'download'},
-    {'wmclass': 'error'},
-    {'wmclass': 'file_progress'},
-    {'wmclass': 'notification'},
-    {'wmclass': 'splash'},
-    {'wmclass': 'toolbar'},
-    {'wmclass': 'confirmreset'},  # gitk
-    {'wmclass': 'makebranch'},  # gitk
-    {'wmclass': 'maketag'},  # gitk
-    {'wname': 'branchdialog'},  # gitk
-    {'wname': 'pinentry'},  # GPG key password entry
-    {'wmclass': 'ssh-askpass'},  # ssh-askpass
-    {'wname': 'Library'}, # Firefox history
-    {'wname': 'Kite'}, # Kite AI
-    {'wmclass': 'InputOutput'},
-    #{'wname': 'Chat'}, # Zoom chat window
-
-])
+floating_layout = layout.Floating(
+    float_rules=[
+        {'wmclass': 'confirm'},
+        {'wmclass': 'dialog'},
+        {'wmclass': 'download'},
+        {'wmclass': 'error'},
+        {'wmclass': 'file_progress'},
+        {'wmclass': 'notification'},
+        {'wmclass': 'splash'},
+        {'wmclass': 'toolbar'},
+        {'wmclass': 'confirmreset'},  # gitk
+        {'wmclass': 'makebranch'},  # gitk
+        {'wmclass': 'maketag'},  # gitk
+        {'wname': 'branchdialog'},  # gitk
+        {'wname': 'pinentry'},  # GPG key password entry
+        {'wmclass': 'ssh-askpass'},  # ssh-askpass
+        {'wname': 'Library'}, # Firefox history
+        {'wname': 'Kite'}, # Kite AI
+        {'wmclass': 'InputOutput'},
+        #{'wname': 'Chat'}, # Zoom chat window
+    ],
+    border_normal = COLORS["Frost"][0],
+    border_focus = COLORS["Aurora"][3],
+    **({key:val for key, val in layout_config.items() if key != 'border_normal' and key != 'border_focus'}),
+    )
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 

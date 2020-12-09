@@ -141,7 +141,8 @@ export YAOURT_COLORS="nb=1:pkg=1:ver=1;32:lver=1;45:installed=1;42:grp=1;34:od=1
 
 ##### VARIABLES #####
 export TERM='alacritty'
-export EDITOR='vim'
+export EDITOR='nvim'
+export VISUAL='nvim'
 
 ##### ALIASES #####
 ls="exa"
@@ -152,6 +153,7 @@ alias lst="exa --tree"
 alias cmatrix="unimatrix -a"
 alias config='/usr/bin/git --git-dir=$HOME/.myconfig/ --work-tree=$HOME'
 alias vim="nvim"
+alias ranger='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR"'
 
 ##### STARTUP #####
 clear

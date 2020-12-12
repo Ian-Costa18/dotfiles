@@ -57,9 +57,6 @@ ALT = "mod1"
 
 mod = SUPER
 
-#start_sh = os.path.expanduser('~/.config/qtile/start.sh')
-
-
 ##### CUSTOM GROUPS ######
 groups = [
     ScratchPad("scpd", [
@@ -142,11 +139,12 @@ keys = [
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout()),
     Key([mod, "shift"], "c", lazy.window.kill()),
-
     Key([mod, "control"], "r", lazy.restart()),
     Key([mod, "control"], "q", lazy.spawn("rofi -show power-menu -modi power-menu:rofi-power-menu --no-symbols")),
     Key([mod], "r", lazy.spawn('rofi -show drun')),
     Key([mod, "shift"], "r", lazy.spawn('rofi -show run')),
+    # Sow Greenclip clipboard manager
+    Key([mod], "c", lazy.spawn('rofi -modi "clipboard:greenclip print" -show clipboard -run-command \'{cmd}\'')),
     # Switch to last used group with Alt+Tab
     #Key([ALT], "Tab", lazy.screen.toggle_group()),
     Key([ALT], "Tab", lazy.spawn('rofi -show window')),
@@ -192,18 +190,13 @@ widget_defaults = dict(
 )
 extension_defaults = widget_defaults.copy()
 
-#sep_defaults = [linewidth: 2]
 separator = copy(widget.Sep(linewidth=2))
-#separator = copy(widget.TextBox(text="▶", background=COLORS["Aurora"][0], foreground=COLORS["Aurora"][3])) # Seperator with arrows
 arrow_left = dict(
     text='',
     fontsize = 43,
     padding = 0
 )
 
-# Mouse Callback for Calendar
-def show_calendar():
-    return lazy.group['scpd'].dropdown_toggle('calendar')
 
 screens = [
     Screen(
@@ -242,12 +235,10 @@ screens = [
                        **arrow_left
                        ),
                 widget.Clock(
-                    format='%I:%M %p %m/%d', 
-                    timezone=None, 
+                    format='%I:%M %p %m/%d',
+                    timezone=None,
                     background = COLORS["Aurora"][0],
-                    mouse_callbacks = {"Button1": lambda lazy: show_calendar}
                     )
-                #widget.QuickExit(default_text='[exit]', countdown_format="[{}]"),
             ],
             24,
             opacity=0.9,
@@ -259,8 +250,6 @@ screens = [
             [
                 widget.CurrentLayoutIcon(),
                 widget.GroupBox(invert_mouse_wheel=True),
-                #widget.Prompt(), # Change to Rofi
-                #widget.WindowName(),
                 separator,
                 widget.TaskList(
                     font = "FiraMono Bold",
@@ -270,23 +259,13 @@ screens = [
                     txt_minimized = "🗕 ",
                     border = COLORS["Polar Night"][3],
                     ),
-                #copy(separator),
-                #widget.Net(fmt="↓{down}↑{up}", interface="wlp2s0"),
-                #copy(separator),
-                #widget.Battery(charge_char='+', discharge_char='-', format='{char}{percent:2.0%} {hour:d}:{min:02d}'),
-                #copy(separator),
-                #widget.BatteryIcon(),
-                #widget.Pacman(fmt="PM:{}", execute="pamac-manager"),
-                #copy(separator),
-                #widget.Systray(),
-                #widget.Volume(volume_down_command= "amixer -D pulse sset Master 5%-", volume_up_command  = "amixer -D pulse sset Master 1%+", volume_app         = "pavucontrol",),
                 widget.TextBox(
                        foreground = COLORS["Aurora"][1],
                        **arrow_left
                        ),
                 widget.Clock(
-                    format='%I:%M %p %m/%d', 
-                    timezone=None, 
+                    format='%I:%M %p %m/%d',
+                    timezone=None,
                     background = COLORS["Aurora"][1]),
                 widget.TextBox(
                        foreground = COLORS["Aurora"][0],
@@ -299,7 +278,6 @@ screens = [
                     background = COLORS["Aurora"][0],
                     padding = 0
                     ),
-                #widget.QuickExit(default_text='[exit]', countdown_format="[{}]", background = COLORS["Aurora"][0]),
             ],
             24,
             opacity=0.9,
@@ -318,27 +296,13 @@ mouse = [
 ]
 
 
-##### HOOKS #####
+##### HOOKS & SCRIPTS #####
 
 # Startup programs
 @hook.subscribe.startup_once
 def autostart():
     start = os.path.expanduser('~/.config/qtile/scripts/autostart.sh')
     subprocess.call([start])
-
-
-#@hook.subscribe.startup
-#def autostart():
-#	# From: https://gitlab.com/PaulBrownMagic/dotfiles/-/blob/master/qtile/config.py
-#	subprocess.call(['killall', 'nm-applet'])
-#	subprocess.call(['killall', 'pa-applet'])
-#	processes = [
-#	        ['pa-applet'],
-#	        ['nm-applet'],
-#	      	#['xfce4-power-manager', '--restart'], # For laptop power management
-#			]
-#	for p in processes:
-#	    subprocess.call(p)
 
 
 astro = Thread(target=start_astro_scanner)
@@ -368,10 +332,9 @@ floating_layout = layout.Floating(
         {'wname': 'branchdialog'},  # gitk
         {'wname': 'pinentry'},  # GPG key password entry
         {'wmclass': 'ssh-askpass'},  # ssh-askpass
-        {'wname': 'Library'}, # Firefox history
-        {'wname': 'Kite'}, # Kite AI
+        {'wname': 'Library'},  # Firefox history
+        {'wname': 'Kite'},  # Kite AI
         {'wmclass': 'InputOutput'},
-        #{'wname': 'Chat'}, # Zoom chat window
     ],
     border_normal = COLORS["Frost"][0],
     border_focus = COLORS["Aurora"][3],
@@ -388,5 +351,6 @@ focus_on_window_activation = "smart"
 #
 # We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
 # java that happens to be on java's whitelist.
+# wmname = "Qtile" # Breaks PyCharm :(
 wmname = "LG3D"
-#Rwmname = "Qtile" # Breaks PyCharm :(
+

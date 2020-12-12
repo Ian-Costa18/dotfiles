@@ -27,6 +27,7 @@ source ~/.vimrc
 let g:rainbow_active = 1
 let g:AutoPairsFlyMode = 1
 let g:nord_cursor_line_number_background = 1
+let g:indentLine_setConceal = 0
 
 " NCM2
 augroup NCM2

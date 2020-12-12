@@ -27,4 +27,6 @@ set termguicolors
 set noshowmode
 set cursorline
 set clipboard=unnamedplus
+" Disable quote concealing in JSON files
+let g:vim_json_conceal=0
 

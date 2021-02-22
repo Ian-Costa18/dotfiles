@@ -32,6 +32,7 @@ import subprocess
 from copy import copy
 from astro import start_astro_scanner
 from threading import Thread
+from powerline.bindings.qtile.widget import PowerlineTextBox
 
 from typing import List  # noqa: F401
 
@@ -69,10 +70,10 @@ groups = [
     ]),
     Group("a", layout="monadtall"),
     Group("s", spawn="firefox", layout="max"),
-    Group("d", spawn="alacritty", layout="monadtall"), #, matches=[Match(wm_class=["alacritty", "Alacritty"])],
+    Group("d", spawn="alacritty", layout="monadtall"),
     Group("f", layout="monadwide"),
     Group("u"),
-    Group("i", matches=[Match(wm_class=["lutris"])], spawn="lutris"),
+    Group("i", matches=[Match(wm_class=["Lutris"])], spawn="lutris"),
     Group("o", matches=[Match(wm_class=["thunderbird", "Mozilla Thunderbird"])], spawn="thunderbird", layout="max"),
     Group("p", matches=[Match(wm_class=["discord"])], spawn="discord", layout="max"),
 ]
@@ -182,7 +183,7 @@ for i in groups:
 ##### SCREENS #####
 
 widget_defaults = dict(
-    font='FiraMono',
+    font='FiraMono Nerd',
     fontsize=12,
     padding=3,
     background=def_colors["background"],
@@ -192,8 +193,12 @@ extension_defaults = widget_defaults.copy()
 
 separator = copy(widget.Sep(linewidth=2))
 arrow_left = dict(
-    text='',
+    text='',
     fontsize = 43,
+    padding = 0
+)
+icons = dict(
+    fontsize = 22,
     padding = 0
 )
 
@@ -214,31 +219,41 @@ screens = [
                     border = COLORS["Polar Night"][3],
                     ),
                 widget.TextBox(
-                       foreground = COLORS["Frost"][3],
-                       **arrow_left
-                       ),
+                    foreground = COLORS["Frost"][3],
+                    **arrow_left
+                ),
+                widget.TextBox(
+                    background = COLORS["Frost"][3],
+                    text = "",
+                    **icons
+                ),
                 widget.Systray(background = COLORS["Frost"][3]),
                 widget.TextBox(
-                       foreground = COLORS["Aurora"][1],
-                       background = COLORS["Frost"][3],
-                       **arrow_left
-                       ),
-                widget.Volume(
-                    volume_down_command = "amixer -D pulse sset Master 5%-", 
-                    volume_up_command = "amixer -D pulse sset Master 1%+", 
-                    volume_app = "pavucontrol",
-                    background = COLORS["Aurora"][1],
-                    ),
+                    foreground = COLORS["Aurora"][1],
+                    background = COLORS["Frost"][3],
+                    **arrow_left
+                ),
                 widget.TextBox(
-                       foreground = COLORS["Aurora"][0],
-                       background = COLORS["Aurora"][1],
-                       **arrow_left
-                       ),
+                    background = COLORS["Aurora"][1],
+                    text = "墳",
+                    **icons
+                ),
+                widget.Volume(
+                    volume_down_command = "amixer -D pulse sset Master 5%-",
+                    volume_up_command = "amixer -D pulse sset Master 1%+",
+                    volume_app = "pavucontrol",
+                    background = COLORS["Aurora"][1]
+                ),
+                widget.TextBox(
+                    foreground = COLORS["Aurora"][0],
+                    background = COLORS["Aurora"][1],
+                    **arrow_left
+                ),
                 widget.Clock(
-                    format='%I:%M %p %m/%d',
+                    format='%I:%M%p %m/%d',
                     timezone=None,
-                    background = COLORS["Aurora"][0],
-                    )
+                    background = COLORS["Aurora"][0]
+                )
             ],
             24,
             opacity=0.9,
@@ -302,7 +317,7 @@ mouse = [
 @hook.subscribe.startup_once
 def autostart():
     start = os.path.expanduser('~/.config/qtile/scripts/autostart.sh')
-    subprocess.call([start])
+    Thread(target=subprocess.call, args=[[start]]).start()
 
 
 astro = Thread(target=start_astro_scanner)
@@ -353,4 +368,3 @@ focus_on_window_activation = "smart"
 # java that happens to be on java's whitelist.
 # wmname = "Qtile" # Breaks PyCharm :(
 wmname = "LG3D"
-
